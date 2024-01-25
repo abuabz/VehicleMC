@@ -1,0 +1,23 @@
+.App{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('./assets/bgimg.jpg');
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+}
+.goBtn{
+    background-color: #d6ab66;
+    color: #1e424e;
+    width: 144px;
+    font-weight: 900;
+    height: 30px;
+}
+
+.goBtn:hover{
+    background-color: #d6ab66cc;
+    color: #1e424e;
+    width: 144px;
+    font-weight: 900;
+}
