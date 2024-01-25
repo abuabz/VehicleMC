@@ -1,0 +1,29 @@
+.home-container {
+    animation: slideIn 0.5s ease-out forwards;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+.homeMain{
+  display: flex;
+  justify-content: center;
+}
+
+#cardDesign{
+  background-image: url('https://media.zigcdn.com/media/model/2023/Jun/lest-side-view-1341726075_600x400.jpg');
+}
+.actions{
+  position: absolute;
+  bottom: 0;
+  left: 1px;
+}
+.actions a{
+  padding: 3px 7px;
+  margin: 10px;
+}
