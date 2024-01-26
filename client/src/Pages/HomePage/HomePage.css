@@ -12,12 +12,14 @@
   }
 .homeMain{
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  min-height: 85vh;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 60px;
 }
 
-#cardDesign{
-  background-image: url('https://media.zigcdn.com/media/model/2023/Jun/lest-side-view-1341726075_600x400.jpg');
-}
+
 .actions{
   position: absolute;
   bottom: 0;
@@ -26,4 +28,14 @@
 .actions a{
   padding: 3px 7px;
   margin: 10px;
+}
+.cardContent{
+  background: #ffffffb3;
+  backdrop-filter: blur(2px);
+  padding: 10px;
+  border-radius: 17px;
+}
+#cardDesign{
+  background-position: left;
+  background-size: cover;
 }
