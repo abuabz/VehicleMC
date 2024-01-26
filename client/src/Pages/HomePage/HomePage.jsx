@@ -31,17 +31,44 @@ const vehicleData = [
     pcc: "22/06/2024 (148 days)",
     backgroundImage: 'https://imgd.aeplcdn.com/1280x720/n/cw/ec/55973/rs-200-left-side-view.png'
   },
+  {
+    title: "RS",
+    subtitle: "Bajaj",
+    model: "2019",
+    number: "KL 49 L 1903",
+    insurance: "22/12/2024 (331 days)",
+    pcc: "22/06/2024 (148 days)",
+    backgroundImage: 'https://imgd.aeplcdn.com/1280x720/n/cw/ec/55973/rs-200-left-side-view.png'
+  },
+  {
+    title: "RS",
+    subtitle: "Bajaj",
+    model: "2019",
+    number: "KL 49 L 1903",
+    insurance: "22/12/2024 (331 days)",
+    pcc: "22/06/2024 (148 days)",
+    backgroundImage: 'https://imgd.aeplcdn.com/1280x720/n/cw/ec/55973/rs-200-left-side-view.png'
+  },
+  {
+    title: "RS",
+    subtitle: "Bajaj",
+    model: "2019",
+    number: "KL 49 L 1903",
+    insurance: "22/12/2024 (331 days)",
+    pcc: "22/06/2024 (148 days)",
+    backgroundImage: 'https://imgd.aeplcdn.com/1280x720/n/cw/ec/55973/rs-200-left-side-view.png'
+  },
 ];
 export default function HomePage() {
 
   return (
-    <> 
-    <Navbar />
-    <div className="home-container">
-    
-      <div className="homeMain">
-      {vehicleData.map((card, index) => (
-            <div className="card col-3 " style={{ width: "20rem", minHeight: '256px',margin:'30px',  backgroundImage: `url(${card.backgroundImage})`, }} key={index} id='cardDesign'>
+    <>
+      <Navbar />
+      <div className="home-container">
+
+        <div className="homeMain">
+          {vehicleData.map((card, index) => (
+            <div className="card col-3 " style={{ width: "20rem", minHeight: '256px', margin: '30px', backgroundImage: `url(${card.backgroundImage})`, }} key={index} id='cardDesign'>
               <div className="card-body">
                 <div className='cardContent'>
                   <h5 className="card-title fw-bold ">{card.title}</h5>
@@ -63,11 +90,9 @@ export default function HomePage() {
               </div>
             </div>
           ))}
- 
-
+        </div>
       </div>
-    </div>
     </>
-   
+
   );
 }
