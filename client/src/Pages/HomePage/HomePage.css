@@ -13,7 +13,7 @@
 .homeMain{
   display: flex;
   justify-content: space-around;
-  min-height: 85vh;
+  height: auto;
   align-items: center;
   flex-wrap: wrap;
   margin-top: 60px;
