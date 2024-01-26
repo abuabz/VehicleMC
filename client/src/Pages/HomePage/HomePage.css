@@ -1,15 +1,3 @@
-.home-container {
-    animation: slideIn 0.5s ease-out forwards;
-  }
-  
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
 .homeMain{
   display: flex;
   justify-content: space-around;
