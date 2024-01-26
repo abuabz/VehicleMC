@@ -7,5 +7,9 @@ body{
     margin: 0;
     box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
-   
+    background-image: url("https://img.freepik.com/premium-photo/square-ceramic-white-tile-background-decor-modern-home-kitchen-wall-3d-illustration_73274-612.jpg");
+
 }
+body::-webkit-scrollbar {
+    display: none;
+  }
