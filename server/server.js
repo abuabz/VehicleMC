@@ -45,7 +45,11 @@ app.post('/api/document',
       res.status(200).json({ success: true, message: 'Added document' });
     } catch (error) {
       console.log(error)
-      res.status(400).json({ success: false, message: 'error uploading data' })
+      if(error.code === 11000){
+
+        return res.status(400).json({ success: false, message: 'Duplicate Document' })
+      }
+      return res.status(400).json({ success: false, message: 'error uploading data' })
     }
 
   });
@@ -73,7 +77,7 @@ app.delete('/api/document/:id',async (req,res)=>{
     // Use await with the .find() method to retrieve all documents
     const resourceId = req.params.id;
     const data = await Documents.findByIdAndDelete(resourceId);
-
+    
     // console.log(data)
     if(data){
       res.status(200).json({
@@ -82,16 +86,16 @@ app.delete('/api/document/:id',async (req,res)=>{
         message:`${data.vehicleName} deleted successfully`
       })
     }else{
-      throw new Error('no record found')
+      throw new Error('no record found' )
     }
     
   } catch (error) {
-    console.error('Error while reading data:', error);
-    res.status(400).json({success:false,message:'Error reading data'})
+    console.log('Error while reading data:', error);
+    res.status(400).json({success:false,message:error.message||'Error reading data'})
   }
 })
 
-app.put('/api/document/:id',async (req,res)=>{
+app.put('/api/document/:id',upload.single('vehicleImg'),async (req,res)=>{
   try {
     // Use await with the .find() method to retrieve all documents
     const resourceId = req.params.id;
@@ -114,8 +118,8 @@ app.put('/api/document/:id',async (req,res)=>{
     })
     
   } catch (error) {
-    console.error('Error while reading data:', error);
-    res.status(400).json({success:false,message:'Error reading data'})
+    console.error('Error while updating data:', error);
+    res.status(400).json({success:false,message:'Error updating data'})
   }
 })
 

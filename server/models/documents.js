@@ -29,6 +29,8 @@ const documents = new mongoose.Schema({
   vehicleNo: {
     type: String,
     required: true,
+    unique: true,
+    index:true
   },
   insuranceDate: {
     type: String,
