@@ -18,10 +18,11 @@
   margin: 10px;
 }
 .cardContent{
-  background: #ffffffb3;
+  background-color: var(--card-bg-color);
   backdrop-filter: blur(2px);
   padding: 10px;
   border-radius: 17px;
+  color: var(--text-color);
 }
 #cardDesign{
   background-position: left;
@@ -33,4 +34,7 @@
 }
 #addCardcontent{
   cursor: pointer;
+}
+.brand{
+  color: var(--text-color-opacity);
 }

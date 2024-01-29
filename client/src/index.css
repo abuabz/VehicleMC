@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;500;600;700;800&display=swap');
-html{
+
+html {
     scroll-behavior: smooth;
 }
-body{
+
+body {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
@@ -10,6 +12,25 @@ body{
     background-image: url("https://img.freepik.com/premium-photo/square-ceramic-white-tile-background-decor-modern-home-kitchen-wall-3d-illustration_73274-612.jpg");
 
 }
+
 body::-webkit-scrollbar {
     display: none;
-  }
+}
+
+body.dark {
+    background-image: url("https://img.freepik.com/free-vector/3d-abstract-wave-pattern-background-vector_53876-171398.jpg?w=826&t=st=1706504695~exp=1706505295~hmac=a6e5ff7b2937f73f60bf3e74d8be3d9334491512326f9478e69863b1da5ac1ba");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    --text-color: #ffffff;
+    --card-bg-color: #000000b3;
+    --text-color-opacity: #ffffff88;
+    transition: 1s;
+}
+
+:root {
+    --text-color: #000000;
+    --card-bg-color: #ffffffb3;
+    --text-color-opacity: #212529bf;
+    transition: 1s;
+}
