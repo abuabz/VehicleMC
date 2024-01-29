@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import './HomePage.css';
 import Navbar from '../../Components/Navbar/Navbar';
-
+import axios from 'axios'
 
 const vehicleData = [
   {
@@ -46,12 +46,12 @@ const vehicleData = [
 ];
 export default function HomePage() {
   const [show, setShow] = useState(false);
-
+  const [vehicles, setVehicles] = useState([]);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const getRemainingDays = (insuranceDate) => {
-    const dateParts = insuranceDate.split("/");
-    const formattedDate = `${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`;
+    const dateParts = insuranceDate.split("-");
+    const formattedDate = `${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`;
 
     const today = new Date();
     const expiryDate = new Date(formattedDate);
@@ -59,29 +59,41 @@ export default function HomePage() {
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://super-eel-bell-bottoms.cyclic.app/api/documents');
+        if (response.data && response.data.success) {
+          setVehicles(response.data.data); // Update the state with the fetched data
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <>
       <Navbar />
       <div className="home-container">
         <div className="homeMain">
-          {vehicleData.map((card, index) => {
-            const remainingDays = getRemainingDays(card.insuranceDate);
-            const remainingDaysOfPcc = getRemainingDays(card.pcc);
-            console.log(remainingDaysOfPcc, 'pcc')
-            const insuranceStyle = remainingDays < 1 ? { color: 'red' } :
-              remainingDays < 15 ? { color: '#bd7a00' } : {};
+          {vehicles.map((vehicle, index) => {
+            const remainingInsuranceDays = getRemainingDays(vehicle.insuranceDate);
+            const remainingPccDays = getRemainingDays(vehicle.PCCDate);
+            const insuranceStyle = remainingInsuranceDays < 1 ? { color: 'red' } :
+              remainingInsuranceDays < 15 ? { color: '#bd7a00' } : {};
             return (
-              <div className="card col-3" style={{ width: "20rem", minHeight: '256px', margin: '30px', backgroundImage: `url(${card.backgroundImage})` }} key={index} id='cardDesign'>
+              <div className="card col-3" style={{ width: "20rem", minHeight: '256px', margin: '30px', backgroundImage: `url(https://t4.ftcdn.net/jpg/05/53/55/21/360_F_553552160_9HxeyvvbSrOtEqpaiWsCD2TEnwQxvrwB.jpg)` }} key={index} id='cardDesign'>
                 <div className="card-body">
                   <div className='cardContent'>
-                    <h5 className="card-title fw-bold ">{card.title}</h5>
-                    <h6 className="card-subtitle mb-2 brand">{card.subtitle}</h6>
-                    <h6>Model : <b>{card.model}</b></h6>
-                    <h6>Number : <b>{card.number}</b></h6>
+                    <h5 className="card-title fw-bold ">{vehicle.vehicleName}</h5>
+                    <h6 className="card-subtitle mb-2 brand">{vehicle.vehicleBrand}</h6>
+                    <h6>Model : <b>{vehicle.vehicleModel}</b></h6>
+                    <h6>Number : <b>{vehicle.vehicleNo}</b></h6>
                     <h6 style={insuranceStyle}>
-                      Insurance: <b>{card.insuranceDate} ({remainingDays} days)</b>
+                      Insurance: <b>{vehicle.insuranceDate} ({remainingInsuranceDays} days)</b>
                     </h6>
-                    <h6>Pcc : <b>{card.pcc} ({remainingDaysOfPcc} days)</b></h6>
+                    <h6>Pcc : <b>{vehicle.PCCDate} ({remainingPccDays} days)</b></h6>
                   </div>
 
                   <div className='actions'>
@@ -136,14 +148,25 @@ export default function HomePage() {
                     autoFocus
                   />
                 </Form.Group>
-                <Form.Group className="mb-3 " controlId="exampleForm.ControlInput1">
+                <Form.Group className="mb-3 " controlId="exampleForm.ControlInput2">
                   <Form.Label>Vehicle Brand</Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="Vehicle Brand"
                   />
                 </Form.Group>
-               
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput3">
+                  <Form.Label>Vehicle Model</Form.Label>
+                  <Form.Control as="select" defaultValue="Choose...">
+                    <option disabled>Choose...</option>
+                    {Array.from({ length: (2030 - 1800) + 1 }, (_, i) => 1800 + i).map(year => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+
               </Form>
             </Modal.Body>
             <Modal.Footer>
