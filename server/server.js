@@ -25,27 +25,30 @@ const upload = multer({ storage: storage });
 app.use('/imageRaead', express.static('uploads'))
 
 // Define a route for handling file uploads
-app.post('/api/document', upload.single('vehicleImg'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded.' });
+app.post('/api/document',
+  upload.single('vehicleImg'),
+  async (req, res) => {
+    try {
+      // if (!req.file) {
+      //   return res.status(400).json({ error: 'No file uploaded.' });
+      // }
+      console.log(req.body)
+      const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
+      // const vehicleImg = `/uploads/${req.file.filename}`;
+
+      const newDoc = new Documents({
+        vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate,
+        //  vehicleImg
+      });
+
+      await newDoc.save()
+      res.status(200).json({ success: true, message: 'Added document' });
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({ success: false, message: 'error uploading data' })
     }
-    console.log(req.body)
-    const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
-    const vehicleImg = `/uploads/${req.file.filename}`;
 
-    const newDoc = new Documents({
-      vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate, vehicleImg
-    });
-
-    await newDoc.save()
-    res.status(200).json({success:true, message: 'success' });
-  } catch (error) {
-    console.log(error)
-    res.status(400).json({success:false,message:'error uploading data'})
-  }
-
-});
+  });
 
 
 app.get('/', (req, res) => {
