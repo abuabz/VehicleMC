@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 // Create a multer instance with the storage configuration
 const upload = multer({ storage: storage });
 
-app.use('/imageRaead', express.static('uploads'))
+app.use('/imageRead', express.static('uploads'))
 
 // Define a route for handling file uploads
 app.post('/api/document',
@@ -50,6 +50,23 @@ app.post('/api/document',
 
   });
 
+app.get('/api/documents',async (req,res)=>{
+  try {
+    // Use await with the .find() method to retrieve all documents
+    const data = await Documents.find({});
+
+    // console.log(data)
+    res.status(200).json({
+      success:true,
+      data,
+      message:'success'
+    })
+    
+  } catch (error) {
+    console.error('Error while reading data:', error);
+    res.status(400).json({success:false,message:'Error reading data'})
+  }
+})
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/homePage.html')
