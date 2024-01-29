@@ -45,7 +45,11 @@ app.post('/api/document',
       res.status(200).json({ success: true, message: 'Added document' });
     } catch (error) {
       console.log(error)
-      res.status(400).json({ success: false, message: 'error uploading data' })
+      if(error.code === 11000){
+
+        return res.status(400).json({ success: false, message: 'Duplicate Document' })
+      }
+      return res.status(400).json({ success: false, message: 'error uploading data' })
     }
 
   });
