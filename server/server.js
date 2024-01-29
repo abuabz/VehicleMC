@@ -68,6 +68,57 @@ app.get('/api/documents',async (req,res)=>{
   }
 })
 
+app.delete('/api/document/:id',async (req,res)=>{
+  try {
+    // Use await with the .find() method to retrieve all documents
+    const resourceId = req.params.id;
+    const data = await Documents.findByIdAndDelete(resourceId);
+
+    // console.log(data)
+    if(data){
+      res.status(200).json({
+        success:true,
+        data,
+        message:`${data.vehicleName} deleted successfully`
+      })
+    }else{
+      throw new Error('no record found')
+    }
+    
+  } catch (error) {
+    console.error('Error while reading data:', error);
+    res.status(400).json({success:false,message:'Error reading data'})
+  }
+})
+
+app.put('/api/document/:id',async (req,res)=>{
+  try {
+    // Use await with the .find() method to retrieve all documents
+    const resourceId = req.params.id;
+    const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
+
+    const updateData = {
+      vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate
+    }
+
+    const data = await Documents.findByIdAndUpdate(resourceId, updateData, {
+      new: true, // Return the updated document
+      runValidators: true, // Run model validators on update
+    });
+
+    // console.log(data)
+    res.status(200).json({
+      success:true,
+      data,
+      message:'success'
+    })
+    
+  } catch (error) {
+    console.error('Error while reading data:', error);
+    res.status(400).json({success:false,message:'Error reading data'})
+  }
+})
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/homePage.html')
 });
