@@ -68,7 +68,7 @@ export default function HomePage() {
                 <div className="card-body">
                   <div className='cardContent'>
                     <h5 className="card-title fw-bold ">{card.title}</h5>
-                    <h6 className="card-subtitle mb-2 text-body-secondary">{card.subtitle}</h6>
+                    <h6 className="card-subtitle mb-2 brand">{card.subtitle}</h6>
                     <h6>Model : <b>{card.model}</b></h6>
                     <h6>Number : <b>{card.number}</b></h6>
                     <h6 style={insuranceStyle}>

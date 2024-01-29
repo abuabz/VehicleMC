@@ -1,0 +1,22 @@
+.iconLight{
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .5s;
+    color: var(--text-color);
+
+}
+.iconLight:hover{
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .5s;
+}
+.iconName{
+    color: var(--text-color);
+}
