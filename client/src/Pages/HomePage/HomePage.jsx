@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
 import './HomePage.css';
 import Navbar from '../../Components/Navbar/Navbar';
 
@@ -42,6 +45,10 @@ const vehicleData = [
   },
 ];
 export default function HomePage() {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const getRemainingDays = (insuranceDate) => {
     const dateParts = insuranceDate.split("/");
     const formattedDate = `${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`;
@@ -90,16 +97,16 @@ export default function HomePage() {
             );
           })}
           <div className="card col-3" style={{ width: "20rem", minHeight: '256px', margin: '30px', backgroundImage: `url(https://t4.ftcdn.net/jpg/05/53/55/21/360_F_553552160_9HxeyvvbSrOtEqpaiWsCD2TEnwQxvrwB.jpg)` }}>
-                <div className="card-body d-flex  align-items-center justify-content-center "  id='cardDesignAdd'>
-                  <div className='cardContent' id='addCardcontent' >
-                    <h5 className="card-title fw-bold m-0 ">
-                    <i class="bi bi-plus-circle-dotted"></i>
-                      Add More
-                      
-                      </h5>
-                  </div>
+            <div className="card-body d-flex  align-items-center justify-content-center " id='cardDesignAdd'>
+              <div className='cardContent' id='addCardcontent' onClick={handleShow}>
+                <h5 className="card-title fw-bold m-0 ">
+                  <i class="bi bi-plus-circle-dotted"></i>
+                  Add More
 
-                  {/* <div className='actions'>
+                </h5>
+              </div>
+
+              {/* <div className='actions'>
                     <a href="#" className="btn btn-secondary">
                       Update
                     </a>
@@ -107,8 +114,45 @@ export default function HomePage() {
                       Delete
                     </a>
                   </div> */}
-                </div>
-              </div>
+            </div>
+          </div>
+
+          <Modal
+            show={show}
+            onHide={handleClose}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Header >
+              <Modal.Title>Add Vehicle</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Vehicle Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Vehicle Name"
+                    autoFocus
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3 " controlId="exampleForm.ControlInput1">
+                  <Form.Label>Vehicle Brand</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Vehicle Brand"
+                  />
+                </Form.Group>
+               
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="outline-secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="secondary">Add</Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
     </>

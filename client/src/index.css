@@ -10,13 +10,23 @@ body {
     box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
     background-image: url("https://img.freepik.com/premium-photo/square-ceramic-white-tile-background-decor-modern-home-kitchen-wall-3d-illustration_73274-612.jpg");
-
+    transition: 1s;
 }
 
 body::-webkit-scrollbar {
     display: none;
 }
 
+
+:root {
+    --text-color: #000000;
+    --card-bg-color: #ffffffb3;
+    --text-color-opacity: #212529bf;
+    --modal-color: #f3f3f3;
+    --box-shadow-color: #00000040;
+    
+    
+}
 body.dark {
     background-image: url("https://img.freepik.com/free-vector/3d-abstract-wave-pattern-background-vector_53876-171398.jpg?w=826&t=st=1706504695~exp=1706505295~hmac=a6e5ff7b2937f73f60bf3e74d8be3d9334491512326f9478e69863b1da5ac1ba");
     background-repeat: no-repeat;
@@ -25,12 +35,8 @@ body.dark {
     --text-color: #ffffff;
     --card-bg-color: #000000b3;
     --text-color-opacity: #ffffff88;
+    --modal-color: #353535;
+    --box-shadow-color: #b8b8b840;
     transition: 1s;
-}
 
-:root {
-    --text-color: #000000;
-    --card-bg-color: #ffffffb3;
-    --text-color-opacity: #212529bf;
-    transition: 1s;
 }
