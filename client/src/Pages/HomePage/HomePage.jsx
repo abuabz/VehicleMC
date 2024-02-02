@@ -4,8 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import './HomePage.css';
 import Navbar from '../../Components/Navbar/Navbar';
-import axios from 'axios'
-
+import axios from 'axios';
+import Select from 'react-select'
 const vehicleData = [
   {
     title: "Shine 125",
@@ -44,9 +44,32 @@ const vehicleData = [
     backgroundImage: 'https://stimg.cardekho.com/images/carexteriorimages/930x620/Maruti/S-Presso/10348/Maruti-S-Presso-LXi/1687519307943/front-left-side-47.jpg'
   },
 ];
+const customStyles = {
+  control: (provided) => ({
+    ...provided,
+    backgroundColor: 'var(--modal-color)',
+    color: 'var(--text-color)',
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'var(--text-color)',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: 'var(--modal-color)',
+    color: 'var(--text-color)',
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused ? 'gray' : 'var(--modal-color)',
+    color: 'var(--text-color)',
+  }),
+  // Add more custom styles if needed
+};
 export default function HomePage() {
   const [show, setShow] = useState(false);
   const [vehicles, setVehicles] = useState([]);
+  const [selectedModel, setSelectedModel] = useState(null);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const getRemainingDays = (insuranceDate) => {
@@ -72,6 +95,27 @@ export default function HomePage() {
     };
     fetchData();
   }, []);
+
+  const deleteVehicle = async (vehicleId) => {
+    try {
+      const response = await axios.delete(`https://super-eel-bell-bottoms.cyclic.app/api/document/${vehicleId}`);
+      if (response.data && response.data.success) {
+        // Remove the deleted vehicle from the state
+        setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
+      }
+    } catch (error) {
+      console.error('Error deleting the vehicle:', error);
+    }
+  };
+
+  const yearOptions = Array.from({ length: (2030 - 1800) + 1 }, (_, i) => {
+    const year = 1800 + i;
+    return { value: year, label: year.toString() };
+  });
+
+  const handleModelChange = (selectedOption) => {
+    setSelectedModel(selectedOption);
+  };
   return (
     <>
       <Navbar />
@@ -100,7 +144,7 @@ export default function HomePage() {
                     <a href="#" className="btn btn-secondary">
                       Update
                     </a>
-                    <a href="#" className="btn btn-danger">
+                    <a href="#" className="btn btn-danger" onClick={() => deleteVehicle(vehicle._id)}>
                       Delete
                     </a>
                   </div>
@@ -157,14 +201,14 @@ export default function HomePage() {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput3">
                   <Form.Label>Vehicle Model</Form.Label>
-                  <Form.Control as="select" defaultValue="Choose...">
-                    <option disabled>Choose...</option>
-                    {Array.from({ length: (2030 - 1800) + 1 }, (_, i) => 1800 + i).map(year => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </Form.Control>
+                  <Select
+                    value={selectedModel}
+                    onChange={handleModelChange}
+                    options={yearOptions}
+                    placeholder="Select a model year..."
+                    isSearchable={true}
+                    styles={customStyles} 
+                  />
                 </Form.Group>
 
               </Form>
