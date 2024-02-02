@@ -7,7 +7,8 @@ const M01_documentsFields = {
   vehicleNo: 'vehicleNo',
   insuranceDate: 'insuranceDate',
   PCCDate: 'PCCDate',
-  // vehicleImg: 'vehicleImg'
+  vehicleImgName: 'vehicleImgName',
+  vehicleImgPath:'vehicleImgPath',
 }
 
 // Define the user schema
@@ -40,10 +41,15 @@ const documents = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // vehicleImg: {    //polution
-  //   type: String,
-  //   required: true,
-  // },
+  vehicleImgName: {    
+    type: String,
+    required: true,
+  },
+  vehicleImgPath: {    
+    type: String,
+    required: true,
+  },
+  
   //   createdAt: {
   //     type: Date,
   //     default: Date.now,
@@ -52,7 +58,17 @@ const documents = new mongoose.Schema({
   //     type: Date,
   //     default: Date.now,
   //   },
+},{
+  virtuals:{
+    vehicleUrl:{
+      get(){
+        return `${process.env.IMGAGE_STR}/${this.vehicleImgName}`
+      }
+    }
+  }
 });
+documents.set('toObject',{virtuals:true})
+documents.set('toJSON',{virtuals:true})
 
 // Create a User model using the documents
 const Documents = mongoose.model('M01_documents', documents);

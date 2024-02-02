@@ -31,20 +31,27 @@ app.post('/api/document',
   async (req, res) => {
     try {
 
-      
-      // console.log(req.body)
-      // console.log(Documents.M01_documentsFields)
-      let data =  getValuesFromJson(req.body,M01_documentsFields)
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded.' });
+      }
+      const vehicleImglocation = `/uploads/`;
+      const vehicleImgname = req.file.filename
+      console.log(`${process.env.IMGAGE_STR}/${vehicleImgname}`)
+
+      const fields = {...M01_documentsFields};
+      delete fields.vehicleImgName;
+      delete fields.vehicleImgPath;
+      let data =  getValuesFromJson(req.body,fields)
       if(data === false){
         const err = new Error('Some data is missing')
         err.msg = 'Some data is missing'
         throw err
       }
-      // if (!req.file) {
-      //   return res.status(400).json({ error: 'No file uploaded.' });
-      // }
-      // const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
-      // const vehicleImg = `/uploads/${req.file.filename}`;
+      data[M01_documentsFields.vehicleImgName] = vehicleImgname;
+      data[M01_documentsFields.vehicleImgPath] = vehicleImglocation;
+
+      // console.log(data)
+      
 
       const newDoc = new Documents(data);
 
