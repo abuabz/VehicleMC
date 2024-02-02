@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors'); // Import cors module
-const Documents = require('./models/documents');
+const {Documents,M01_documentsFields} = require('./models/documents');
+const { getValuesFromJson } = require('./controllers/staticFunctions');
 const app = express();
 require('dotenv').config();
 app.use(cors());
@@ -29,17 +30,23 @@ app.post('/api/document',
   upload.single('vehicleImg'),
   async (req, res) => {
     try {
+
+      
+      // console.log(req.body)
+      // console.log(Documents.M01_documentsFields)
+      let data =  getValuesFromJson(req.body,M01_documentsFields)
+      if(data === false){
+        const err = new Error('Some data is missing')
+        err.msg = 'Some data is missing'
+        throw err
+      }
       // if (!req.file) {
       //   return res.status(400).json({ error: 'No file uploaded.' });
       // }
-      console.log(req.body)
-      const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
+      // const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
       // const vehicleImg = `/uploads/${req.file.filename}`;
 
-      const newDoc = new Documents({
-        vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate,
-        //  vehicleImg
-      });
+      const newDoc = new Documents(data);
 
       await newDoc.save()
       res.status(200).json({ success: true, message: 'Added document' });
@@ -49,6 +56,11 @@ app.post('/api/document',
 
         return res.status(400).json({ success: false, message: 'Duplicate Document' })
       }
+      if(error.msg){
+
+        return res.status(400).json({ success: false, message: error.msg})
+      }
+      
       return res.status(400).json({ success: false, message: 'error uploading data' })
     }
 
