@@ -32,7 +32,7 @@ app.post('/api/document',
     try {
 
       if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded.' });
+        return res.status(400).json({ success: true, message: 'image not uploaded' });
       }
       const vehicleImglocation = `/uploads/`;
       const vehicleImgname = req.file.filename
