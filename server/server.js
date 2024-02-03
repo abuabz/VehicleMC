@@ -82,7 +82,8 @@ app.get('/api/documents',async (req,res)=>{
     res.status(200).json({
       success:true,
       data,
-      message:'success'
+      message:'success',
+      version:'1.0'
     })
     
   } catch (error) {
