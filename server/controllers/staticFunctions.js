@@ -9,7 +9,7 @@ function getValuesFromJson(target = {}, resource = {}) {
             data[key] = target[key]
         } else {
             error = true;
-            errData[key] = 'Missing data'
+            errData[key] = `${resource[key]} is missing `
         }
     }
 
