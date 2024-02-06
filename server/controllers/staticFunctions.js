@@ -5,7 +5,7 @@ function getValuesFromJson(target = {}, resource = {}) {
     let error = false
     // console.log(target)
     for (let key in resource) {
-        if (target[resource[key]] !== undefined) { // optional check to only iterate through own properties
+        if (target[resource[key]] !== undefined && !/^\s*$/.test(target[resource[key]])) { // optional check to only iterate through own properties
             data[key] = target[key]
         } else {
             error = true;
