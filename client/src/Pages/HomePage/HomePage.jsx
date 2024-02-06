@@ -6,7 +6,12 @@ import './HomePage.css';
 import Navbar from '../../Components/Navbar/Navbar';
 import axios from 'axios';
 import Select from 'react-select'
-
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Toast from 'react-bootstrap/Toast';
+import { ToastContainer, Zoom, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import imageCar from './BIKE.png'
 const customStyles = {
   control: (provided) => ({
     ...provided,
@@ -31,6 +36,7 @@ const customStyles = {
 };
 export default function HomePage() {
   const [show, setShow] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [vehicles, setVehicles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const handleClose = () => setShow(false);
@@ -74,7 +80,17 @@ export default function HomePage() {
       });
 
       if (response.data.success) {
-        alert(response.data.message); // Alerting the user about success
+        // Show the success message in a Toast notification
+        toast.success('Vehicle Is added', {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
 
         // Fetch the updated list of vehicles after adding
         const updatedResponse = await axios.get('https://vehiclerc.prosevo.com/api/documents');
@@ -84,10 +100,30 @@ export default function HomePage() {
 
         handleClose();
       } else {
-        alert('Failed to add document'); // Handle the error case
+        // Show the error message from the response in a Toast notification
+        toast.error(response.data.message, { // Pass the response message here
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (error) {
-      console.error('There was an error!', error);
+      // console.error('There was an error!', error.response.data.message);
+      toast.error(error.response.data.message, { // Pass the response message here
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
 
@@ -181,12 +217,12 @@ export default function HomePage() {
 
 
 
-
-
   return (
     <>
       <Navbar />
+      <ToastContainer />
       <div className="home-container">
+
         <div className="homeMain">
           {vehicles.map((vehicle, index) => {
             const remainingInsuranceDays = getRemainingDays(vehicle.insuranceDate);
@@ -196,8 +232,8 @@ export default function HomePage() {
             const pollutionStyle = remainingPccDays < 1 ? { color: 'red' } :
               remainingPccDays < 15 ? { color: '#bd7a00' } : {};
             return (
-              <div className="card col-3" style={{ width: "20rem", minHeight: '256px', margin: '30px', backgroundImage: `url(${vehicle.vehicleUrl})` }} key={index} id='cardDesign'>
-                <div className="card-body">
+              <div className="card col-3" style={{ width: "304px", minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10 }}>
+                {/* <div className="card-body p-4">
                   <div className='cardContent'>
                     <h5 className="card-title fw-bold ">{vehicle.vehicleName}</h5>
                     <h6 className="card-subtitle mb-2 brand">{vehicle.vehicleBrand}</h6>
@@ -217,6 +253,42 @@ export default function HomePage() {
                       Delete
                     </a>
                   </div>
+                </div> */}
+
+                <div className="card-body ">
+                  <div className='nameDiv'>
+                    <span className="Vname">{vehicle.vehicleName}</span>
+                    <div>
+                      <i class="bi bi-trash-fill delete"></i>
+                      <i class="bi bi-pen-fill edit"></i>
+                    </div>
+                  </div>
+                  <p className="Vbrand">{vehicle.vehicleBrand}</p>
+                  <div className='imageDiv'>
+                    <img src={`${vehicle.vehicleUrl}`} alt="" width={"100%"} height={200} />
+                    <div className="shadowDiv">
+                    </div>
+                  </div>
+                  <table class="Pcc">
+                    <tr>
+                      <th><i class="bi bi-aspect-ratio"></i><span>Vehicle No</span> </th>
+                      <td>:{vehicle.vehicleNo}</td>
+                    </tr>
+                    <tr>
+                      <th><i class="bi bi-calendar2-fill"></i> <span>Vehicle Model</span></th>
+                      <td>:{vehicle.vehicleModel}</td>
+                    </tr>
+                    <tr>
+                      <th><i class="bi bi-calendar2-check"></i> <span>Insurance</span></th>
+                      <td style={insuranceStyle}>:{vehicle.insuranceDate}({remainingInsuranceDays} days)</td>
+                    </tr>
+                    <tr>
+                      <th><i class="bi bi-clouds"></i> <span>Polution</span> </th>
+                      <td>:{vehicle.PCCDate} ({remainingPccDays} days)
+                      </td>
+                    </tr>
+                  </table>
+
                 </div>
               </div>
             );
@@ -239,6 +311,47 @@ export default function HomePage() {
                     </a>
                   </div> */}
             </div>
+          </div>
+
+
+          <div className="card col-3" style={{ width: "304px", minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10, height: 388 }}>
+            <div className="card-body p-4">
+              <div className='nameDiv'>
+                <span className="Vname">Shine 125</span>
+                <div>
+                  <i class="bi bi-trash-fill delete"></i>
+                  <i class="bi bi-pen-fill edit"></i>
+                </div>
+              </div>
+              <p className="Vbrand">Honda</p>
+              <div className='imageDiv'>
+                <img src={imageCar} alt="" width={"100%"} />
+                <div className="shadowDiv">
+                </div>
+              </div>
+              <table class="Pcc">
+                <tr>
+                  <th><i class="bi bi-aspect-ratio"></i><span>Vehicle No:</span> </th>
+                  <td>KL71B7909</td>
+                </tr>
+                <tr>
+                  <th><i class="bi bi-calendar2-fill"></i> <span>Vehicle Model:</span></th>
+                  <td>2016(8 Year )</td>
+                </tr>
+                <tr>
+                  <th><i class="bi bi-calendar2-check"></i> <span>Insurance:</span></th>
+                  <td>12/12/2024(607 days)</td>
+                </tr>
+                <tr>
+                  <th><i class="bi bi-clouds"></i> <span>Polution:</span> </th>
+                  <td>12/12/2024
+                    (607 days)
+                  </td>
+                </tr>
+              </table>
+
+            </div>
+
           </div>
 
           <Modal
@@ -346,6 +459,7 @@ export default function HomePage() {
             </Modal.Body>
 
           </Modal>
+
         </div>
       </div>
     </>

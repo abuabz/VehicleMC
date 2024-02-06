@@ -19,4 +19,5 @@
 }
 .iconName{
     color: var(--text-color);
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }

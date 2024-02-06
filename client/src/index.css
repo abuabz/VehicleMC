@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;1,200;1,300;1,700&display=swap');
 
 html {
     scroll-behavior: smooth;
@@ -9,8 +10,10 @@ body {
     margin: 0;
     box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
-    background-image: url("https://img.freepik.com/premium-photo/square-ceramic-white-tile-background-decor-modern-home-kitchen-wall-3d-illustration_73274-612.jpg");
+    
+    /* background-image: url("https://img.freepik.com/premium-photo/square-ceramic-white-tile-background-decor-modern-home-kitchen-wall-3d-illustration_73274-612.jpg"); */
     transition: 1s;
+    background-color: var(--body-color);
 }
 
 body::-webkit-scrollbar {
@@ -19,11 +22,17 @@ body::-webkit-scrollbar {
 
 
 :root {
-    --text-color: #000000;
+    --text-color: #1A202C;
     --card-bg-color: #ffffffb3;
     --text-color-opacity: #212529bf;
     --modal-color: #f3f3f3;
     --box-shadow-color: #00000040;
+    --body-color : #F6F7F9;
+    --card-color:white;
+    --sub-color:#90A3BF;
+    --shadow-vehicle:#ffffff96;
+    --btn-color:#3563E9;
+
     
     
 }
@@ -35,6 +44,12 @@ body.dark {
     --text-color-opacity: #ffffff88;
     --modal-color: #353535;
     --box-shadow-color: #b8b8b840;
+    --card-color:rgb(49, 49, 49);
+    --shadow-vehicle:#313131;
+    --sub-color:#dae6f8;
+
+
+
     transition: 1s;
 
 }

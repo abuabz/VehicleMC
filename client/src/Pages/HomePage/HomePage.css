@@ -1,4 +1,4 @@
-.homeMain{
+.homeMain {
   display: flex;
   justify-content: space-around;
   height: auto;
@@ -8,16 +8,18 @@
 }
 
 
-.actions{
+.actions {
   position: absolute;
   bottom: 0;
   left: 1px;
 }
-.actions a{
+
+.actions a {
   padding: 3px 7px;
   margin: 10px;
 }
-.cardContent{
+
+.cardContent {
   background-color: var(--card-bg-color);
   transition: .5s;
   backdrop-filter: blur(2px);
@@ -25,18 +27,22 @@
   border-radius: 17px;
   color: var(--text-color);
 }
-#cardDesign{
+
+#cardDesign {
   background-position: left;
   background-size: cover;
 }
-#cardDesignAdd{
+
+#cardDesignAdd {
   backdrop-filter: blur(4px);
 
 }
-#addCardcontent{
+
+#addCardcontent {
   cursor: pointer;
 }
-.brand{
+
+.brand {
   color: var(--text-color-opacity);
 }
 
@@ -48,6 +54,7 @@
   outline: 0;
   box-shadow: 0 0 0 0.25rem var(--box-shadow-color);
 }
+
 .modal-content {
   position: relative;
   display: flex;
@@ -77,12 +84,96 @@
   background-clip: padding-box;
   border: var(--bs-border-width) solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
-.form-control::placeholder{
+
+.form-control::placeholder {
   color: var(--text-color-opacity);
 }
-.css-13cymwt-control{
+
+.css-13cymwt-control {
   background-color: var(--modal-color) !important;
   color: var(--text-color);
+}
+
+.Vname {
+  color: var(--text-color);
+  font-weight: bold;
+  font-size: 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
+}
+
+.Vbrand {
+  color: #90A3BF;
+  font-weight: bold;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.nameDiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nameDiv .delete{
+color: rgb(146, 45, 45);
+padding: 8px;
+}
+.nameDiv .edit{
+color: rgb(14, 131, 72);
+}
+.nameDiv i {
+  color: var(--sub-color);
+  cursor: pointer;
+  transition: .5s;
+}
+
+.nameDiv i:hover {
+  color: #374863;
+  transition: .7s;
+}
+
+.shadowImg {
+  background-color: black;
+  width: 100%;
+  height: 50PX;
+}
+
+.imageDiv {
+  position: relative;
+}
+
+.shadowDiv {
+  background: linear-gradient(to top, var(--shadow-vehicle), transparent);
+  /* Shadow from bottom to top */
+  width: 100%;
+  height: 100px;
+  position: absolute;
+  bottom: 0;
+}
+
+.Pcc {
+  color: var(--sub-color);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  width: 100%;
+}
+
+.Pcc th {
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.Pcc i {
+  font-size: 1.2rem;
+}
+
+.Pcc td {
+  font-size: 12px;
+}
+
+.Pcc span {
+  margin-left: 4px;
 }

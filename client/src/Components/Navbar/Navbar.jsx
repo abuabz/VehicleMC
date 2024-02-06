@@ -14,8 +14,8 @@ export default function Navbar() {
     };
     return (
         <>
-            <nav className="navbar fixed-top " style={{ backgroundColor: ' #8c8c8c80', fontWeight: '800', width: '21%', minWidth: '250px', borderBottomRightRadius: '47px',backdropFilter:'blur(5px)' }}>
-                <div className="container-fluid justify-content-evenly  ">
+            <nav className="navbar fixed-top " style={{ backgroundColor: ' #c3d4e966', fontWeight: '800', width: '100%', minWidth: '250px',backdropFilter:'blur(5px)'}}>
+                <div className="container-fluid  ">
                     <a className="navbar-brand d-flex align-items-center " href="#">
                         <img
                             src={logoImg}
