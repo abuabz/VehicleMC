@@ -265,7 +265,7 @@ export default function HomePage() {
                   </div>
                   <p className="Vbrand">{vehicle.vehicleBrand}</p>
                   <div className='imageDiv'>
-                    <img src={`${vehicle.vehicleUrl}`} alt="" width={"100%"} height={'auto'} />
+                    <img src={`${vehicle.vehicleUrl}`} alt="" width={"100%"} height={170} />
                     <div className="shadowDiv">
                     </div>
                   </div>
