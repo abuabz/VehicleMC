@@ -249,7 +249,7 @@ export default function HomePage() {
                     <a href="#" className="btn btn-secondary">
                       Update
                     </a>
-                    <a href="#" className="btn btn-danger" onClick={() => deleteVehicle(vehicle._id)}>
+                    <a href="#" className="btn btn-danger" >
                       Delete
                     </a>
                   </div>
@@ -259,13 +259,13 @@ export default function HomePage() {
                   <div className='nameDiv'>
                     <span className="Vname">{vehicle.vehicleName}</span>
                     <div>
-                      <i class="bi bi-trash-fill delete"></i>
+                      <i class="bi bi-trash-fill delete" onClick={() => deleteVehicle(vehicle._id)}></i>
                       <i class="bi bi-pen-fill edit"></i>
                     </div>
                   </div>
                   <p className="Vbrand">{vehicle.vehicleBrand}</p>
                   <div className='imageDiv'>
-                    <img src={`${vehicle.vehicleUrl}`} alt="" width={"100%"} height={200} />
+                    <img src={`${vehicle.vehicleUrl}`} alt="" width={"100%"} height={'auto'} />
                     <div className="shadowDiv">
                     </div>
                   </div>
