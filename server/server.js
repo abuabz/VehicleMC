@@ -42,9 +42,9 @@ app.post('/api/document',
       delete fields.vehicleImgName;
       delete fields.vehicleImgPath;
       let data =  getValuesFromJson(req.body,fields)
-      if(data === false){
+      if(data.error === true){
         const err = new Error('Some data is missing')
-        err.msg = 'Some data is missing'
+        err.msg = data.data
         throw err
       }
       data[M01_documentsFields.vehicleImgName] = vehicleImgname;
