@@ -284,7 +284,7 @@ export default function HomePage() {
                     </tr>
                     <tr>
                       <th><i class="bi bi-clouds"></i> <span>Polution</span> </th>
-                      <td>:{vehicle.PCCDate} ({remainingPccDays} days)
+                      <td style={pollutionStyle}>:{vehicle.PCCDate} ({remainingPccDays} days)
                       </td>
                     </tr>
                   </table>
