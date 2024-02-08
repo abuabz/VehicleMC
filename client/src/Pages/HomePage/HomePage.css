@@ -177,3 +177,29 @@ color: rgb(14, 131, 72);
 .Pcc span {
   margin-left: 4px;
 }
+
+
+#errorMsg{
+  right: 17px;
+    position: absolute;
+    margin-top: -18px;
+    transition: 2s;
+    color: #b41313 !important;
+}
+
+.input-error{
+  border: #d07070 1px solid;
+  border-radius: 5px;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+.shake-animation {
+  animation: shake 0.5s ease-in-out;
+}

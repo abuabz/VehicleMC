@@ -39,7 +39,14 @@ export default function HomePage() {
   const [showToast, setShowToast] = useState(false);
   const [vehicles, setVehicles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
-  const handleClose = () => setShow(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [submitCount, setSubmitCount] = useState(0);
+
+
+  const handleClose = () =>{
+setShow(false);
+setFormErrors(false); 
+  } 
   const handleShow = () => setShow(true);
   const getRemainingDays = (insuranceDate) => {
     const dateParts = insuranceDate.split("-");
@@ -61,6 +68,7 @@ export default function HomePage() {
     vehicleImg: null,
   });
   const handleSubmit = async (e) => {
+    setSubmitCount(c => c + 1);
     e.preventDefault();
 
     try {
@@ -79,9 +87,8 @@ export default function HomePage() {
         },
       });
 
-      if (response.data.success) {
-        // Show the success message in a Toast notification
-        toast.success('Vehicle Is added', {
+      if (response.data && response.data.success) {
+        toast.success('Vehicle is added', {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: true,
@@ -92,16 +99,14 @@ export default function HomePage() {
           theme: "dark",
         });
 
-        // Fetch the updated list of vehicles after adding
         const updatedResponse = await axios.get('https://vehiclerc.prosevo.com/api/documents');
         if (updatedResponse.data && updatedResponse.data.success) {
-          setVehicles(updatedResponse.data.data); // Update the state with the updated data
+          setVehicles(updatedResponse.data.data);
         }
 
         handleClose();
       } else {
-        // Show the error message from the response in a Toast notification
-        toast.error(response.data.message, { // Pass the response message here
+        toast.error(response.data.message || 'An error occurred while adding the vehicle.', {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: true,
@@ -113,19 +118,43 @@ export default function HomePage() {
         });
       }
     } catch (error) {
-      // console.error('There was an error!', error.response.data.message);
-      toast.error(error.response.data.message, { // Pass the response message here
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+      // Updated error handling for detailed error messages
+
+
+      // Inside your catch block in handleSubmit
+      if (error.response && error.response.data && error.response.data.message && typeof error.response.data.message === 'object') {
+        const errors = error.response.data.message;
+        setFormErrors(errors); // Set the error messages state
+      } else {
+        setFormErrors({}); // Clear errors if none are returned
+      }
+
+      let errorMessage = 'There was an error processing your request.';
+      if (error.response && error.response.data && error.response.data.message && typeof error.response.data.message === 'object') {
+        const errors = error.response.data.message;
+        const errorMessages = Object.keys(errors).map(key => `${errors[key]}`).join(', ');
+        errorMessage = errorMessages;
+      } else if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      // toast.error(errorMessage, {
+      //   position: "top-right",
+      //   autoClose: 2000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "dark",
+      // });
     }
   };
+
+
+
 
 
   const handleChange = (e) => {
@@ -373,9 +402,10 @@ export default function HomePage() {
                     autoFocus
                     value={formValues.vehicleName}
                     onChange={handleChange}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
                   />
                 </Form.Group>
+                {formErrors.vehicleName && <div className="text-danger  shake-animation" id='errorMsg'>{formErrors.vehicleName}</div>}
                 <Form.Group className="mb-3 " controlId="vehicleBrand">
                   <Form.Label>Vehicle Brand</Form.Label>
                   <Form.Control
@@ -383,9 +413,13 @@ export default function HomePage() {
                     placeholder="Vehicle Brand"
                     value={formValues.vehicleBrand}
                     onChange={handleChange}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
+                {formErrors.vehicleBrand && <div className="text-danger  shake-animation" id='errorMsg'>{formErrors.vehicleBrand}</div>}
+
                 <Form.Group className="mb-3" controlId="vehicleModel">
                   <Form.Label>Vehicle Model</Form.Label>
                   {/* <Form.Control
@@ -402,9 +436,13 @@ export default function HomePage() {
                     placeholder="Select a model year..."
                     isSearchable={true}
                     styles={customStyles}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
+                {formErrors.vehicleModel && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.vehicleModel}</div>}
+
 
                 <Form.Group className="mb-3 " controlId="vehicleNo">
                   <Form.Label>Vehicle Number</Form.Label>
@@ -413,10 +451,14 @@ export default function HomePage() {
                     placeholder="Vehicle Number"
                     value={formValues.vehicleNo}
                     onChange={handleChange}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
 
                   />
                 </Form.Group>
+                {formErrors.vehicleNo && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.vehicleNo}</div>}
+
                 <Form.Group className="mb-3" controlId="insuranceDate">
                   <Form.Label>Vehicle Insurance</Form.Label>
                   <Form.Control
@@ -424,9 +466,13 @@ export default function HomePage() {
                     placeholder="Vehicle Insurance"
                     value={formatDateToInput(formValues.insuranceDate)}
                     onChange={(e) => handleDateChange(e.target.value, 'insuranceDate')}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
+                {formErrors.insuranceDate && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.insuranceDate}</div>}
+
                 <Form.Group className="mb-3 " controlId="PCCDate">
                   <Form.Label>Vehicle Pcc</Form.Label>
                   <Form.Control
@@ -434,16 +480,20 @@ export default function HomePage() {
                     placeholder="Vehicle PCC"
                     value={formatDateToInput(formValues.PCCDate)}
                     onChange={(e) => handleDateChange(e.target.value, 'PCCDate')}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
+                {formErrors.PCCDate && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.PCCDate}</div>}
+
 
                 <Form.Group className="mb-3" controlId="vehicleImg">
                   <Form.Label>Vehicle Image</Form.Label>
                   <Form.Control
                     type="file"
                     placeholder="Vehicle Image"
-                    required
+
                     onChange={(e) => handleFileChange(e)} // Add this line
                   />
                 </Form.Group>
