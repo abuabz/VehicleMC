@@ -178,16 +178,48 @@ setFormErrors(false);
   }, []);
 
   const deleteVehicle = async (vehicleId) => {
+    let vehicleName = 'Unknown Vehicle'; // Default value in case vehicle is not found
     try {
+      // Attempt to find the vehicle by ID to get its name before deletion
+      const vehicleToDelete = vehicles.find(vehicle => vehicle._id === vehicleId);
+      if (vehicleToDelete) {
+        vehicleName = vehicleToDelete.vehicleName; // Update vehicleName with the actual name
+      }
+  
       const response = await axios.delete(`https://vehiclerc.prosevo.com/api/document/${vehicleId}`);
       if (response.data && response.data.success) {
         // Remove the deleted vehicle from the state
         setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
+  
+        // Show a success toast with the vehicle's name
+        toast.success(`${vehicleName} Deleted`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (error) {
       console.error('Error deleting the vehicle:', error);
+      // Show an error toast. Here, vehicleName is already defined
+      toast.error(`Failed to delete ${vehicleName}`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
+  
+  
 
   const yearOptions = Array.from({ length: (2030 - 1800) + 1 }, (_, i) => {
     const year = 1800 + i;
