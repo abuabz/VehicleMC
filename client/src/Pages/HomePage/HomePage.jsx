@@ -42,11 +42,22 @@ export default function HomePage() {
   const [formErrors, setFormErrors] = useState({});
   const [submitCount, setSubmitCount] = useState(0);
 
+  const handleClose = () => {
+    setShow(false);
+    setFormErrors({}); // Clear form errors if any
+    // Reset form values to initial state
+    setFormValues({
+      vehicleName: '',
+      vehicleBrand: '',
+      vehicleModel: '',
+      vehicleNo: '',
+      insuranceDate: '',
+      PCCDate: '',
+      vehicleImg: null,
+    });
+    setSelectedModel(null); // If you're using react-select and want to reset the selected option
+  };
 
-  const handleClose = () =>{
-setShow(false);
-setFormErrors(false); 
-  } 
   const handleShow = () => setShow(true);
   const getRemainingDays = (insuranceDate) => {
     const dateParts = insuranceDate.split("-");
@@ -106,7 +117,7 @@ setFormErrors(false);
 
         handleClose();
       } else {
-        toast.error(response.data.message || 'An error occurred while adding the vehicle.', {
+        toast.error(response.data.message || 'An error occurred while adding the vehicle', {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: true,
@@ -157,7 +168,7 @@ setFormErrors(false);
       try {
         const response = await axios.get('https://vehiclerc.prosevo.com/api/documents');
         if (response.data && response.data.success) {
-          setVehicles(response.data.data); 
+          setVehicles(response.data.data);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -167,13 +178,13 @@ setFormErrors(false);
   }, []);
 
   const deleteVehicle = async (vehicleId) => {
-    let vehicleName = 'Unknown Vehicle'; 
+    let vehicleName = 'Unknown Vehicle';
     try {
       const vehicleToDelete = vehicles.find(vehicle => vehicle._id === vehicleId);
       if (vehicleToDelete) {
-        vehicleName = vehicleToDelete.vehicleName; 
+        vehicleName = vehicleToDelete.vehicleName;
       }
-  
+
       const response = await axios.delete(`https://vehiclerc.prosevo.com/api/document/${vehicleId}`);
       if (response.data && response.data.success) {
         setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
@@ -202,8 +213,8 @@ setFormErrors(false);
       });
     }
   };
-  
-  
+
+
 
   const yearOptions = Array.from({ length: (2030 - 1800) + 1 }, (_, i) => {
     const year = 1800 + i;
@@ -277,7 +288,7 @@ setFormErrors(false);
             const pollutionStyle = remainingPccDays < 1 ? { color: 'red' } :
               remainingPccDays < 15 ? { color: '#bd7a00' } : {};
             return (
-              <div className="card col-3" style={{ width: "304px", minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10 }}>
+              <div className="card col-3 vehicleCard" style={{ minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10 }}>
                 {/* <div className="card-body p-4">
                   <div className='cardContent'>
                     <h5 className="card-title fw-bold ">{vehicle.vehicleName}</h5>
@@ -338,63 +349,10 @@ setFormErrors(false);
               </div>
             );
           })}
-          <div className="card col-3" style={{ width: "20rem", minHeight: '256px', margin: '30px', backgroundImage: `url(https://t4.ftcdn.net/jpg/05/53/55/21/360_F_553552160_9HxeyvvbSrOtEqpaiWsCD2TEnwQxvrwB.jpg)` }}>
-            <div className="card-body d-flex  align-items-center justify-content-center " id='cardDesignAdd'>
-              <div className='cardContent' id='addCardcontent' onClick={handleShow}>
-                <h5 className="card-title fw-bold m-0 ">
-                  <i class="bi bi-plus-circle-dotted"></i>
-                  Add More
-                </h5>
-              </div>
 
-              {/* <div className='actions'>
-                    <a href="#" className="btn btn-secondary">
-                      Update
-                    </a>
-                    <a href="#" className="btn btn-danger">
-                      Delete
-                    </a>
-                  </div> */}
-            </div>
-          </div>
-
-
-          <div className="card col-3" style={{ width: "304px", minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10, height: 388 }}>
-            <div className="card-body p-4">
-              <div className='nameDiv'>
-                <span className="Vname">Shine 125</span>
-                <div>
-                  <i class="bi bi-trash-fill delete"></i>
-                  <i class="bi bi-pen-fill edit"></i>
-                </div>
-              </div>
-              <p className="Vbrand">Honda</p>
-              <div className='imageDiv'>
-                <img src={imageCar} alt="" width={"100%"} />
-                <div className="shadowDiv">
-                </div>
-              </div>
-              <table class="Pcc">
-                <tr>
-                  <th><i class="bi bi-aspect-ratio"></i><span>Vehicle No:</span> </th>
-                  <td>KL71B7909</td>
-                </tr>
-                <tr>
-                  <th><i class="bi bi-calendar2-fill"></i> <span>Vehicle Model:</span></th>
-                  <td>2016(8 Year )</td>
-                </tr>
-                <tr>
-                  <th><i class="bi bi-calendar2-check"></i> <span>Insurance:</span></th>
-                  <td>12/12/2024(607 days)</td>
-                </tr>
-                <tr>
-                  <th><i class="bi bi-clouds"></i> <span>Polution:</span> </th>
-                  <td>12/12/2024
-                    (607 days)
-                  </td>
-                </tr>
-              </table>
-
+          <div className="card col-3 vehicleCard" style={{ minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10, height: 388, backgroundImage: `url(https://t4.ftcdn.net/jpg/05/53/55/21/360_F_553552160_9HxeyvvbSrOtEqpaiWsCD2TEnwQxvrwB.jpg)`,backgroundRepeat:'no-repeat',backgroundPosition:'center',backgroundSize:'cover' }}>
+            <div className="card-body p-4 d-flex justify-content-center align-items-center " id='cardDesignAdd'>
+              <Button style={{ backgroundColor: '#90A3BF', border: 'none' }} onClick={handleShow}> <i class="bi bi-car-front-fill"></i> Add More</Button>
             </div>
 
           </div>
@@ -502,19 +460,17 @@ setFormErrors(false);
                   />
                 </Form.Group>
                 {formErrors.PCCDate && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.PCCDate}</div>}
-
-
                 <Form.Group className="mb-3" controlId="vehicleImg">
                   <Form.Label>Vehicle Image</Form.Label>
                   <Form.Control
                     type="file"
                     placeholder="Vehicle Image"
 
+                    className={formErrors.vehicleName ? 'input-error' : ''}
                     onChange={(e) => handleFileChange(e)} // Add this line
                   />
                 </Form.Group>
-
-
+                {formErrors.vehicleImg && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.vehicleImg}</div>}
                 <Modal.Footer>
                   <Button variant="secondary" type='submit'>Add</Button>
                   <Button variant="outline-secondary" onClick={handleClose}>
@@ -523,9 +479,7 @@ setFormErrors(false);
                 </Modal.Footer>
               </Form>
             </Modal.Body>
-
           </Modal>
-
         </div>
       </div>
     </>

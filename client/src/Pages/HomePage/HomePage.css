@@ -35,7 +35,8 @@
 
 #cardDesignAdd {
   backdrop-filter: blur(4px);
-
+  overflow: hidden;
+  border-radius: 40px;
 }
 
 #addCardcontent {
@@ -202,4 +203,13 @@ color: rgb(14, 131, 72);
 
 .shake-animation {
   animation: shake 0.5s ease-in-out;
+}
+.vehicleCard{
+  width:304px
+}
+
+@media (max-width:300px){
+  .vehicleCard{
+    width: 254px;
+  }
 }
