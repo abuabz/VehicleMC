@@ -39,7 +39,42 @@ export default function HomePage() {
   const [showToast, setShowToast] = useState(false);
   const [vehicles, setVehicles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
-  const handleClose = () => setShow(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [submitCount, setSubmitCount] = useState(0);
+  const [editingVehicle, setEditingVehicle] = useState(null);
+
+  const handleEditClick = (vehicle) => {
+    setFormValues({
+      vehicleName: vehicle.vehicleName,
+      vehicleBrand: vehicle.vehicleBrand,
+      vehicleModel: vehicle.vehicleModel,
+      vehicleNo: vehicle.vehicleNo,
+      insuranceDate: vehicle.insuranceDate,
+      PCCDate: vehicle.PCCDate,
+      vehicleImg: null, // You might need a different approach for files
+    });
+    setSelectedModel({ value: vehicle.vehicleModel, label: vehicle.vehicleModel.toString() }); // If using react-select
+    setEditingVehicle(vehicle); // Keep track of the vehicle being edited
+    handleShow(); // Show the form modal
+  };
+  
+  const handleClose = () => {
+    setShow(false);
+    setFormErrors({});
+    setFormValues({
+      vehicleName: '',
+      vehicleBrand: '',
+      vehicleModel: '',
+      vehicleNo: '',
+      insuranceDate: '',
+      PCCDate: '',
+      vehicleImg: null,
+    });
+    setSelectedModel(null);
+    setEditingVehicle(null); // Reset editing vehicle
+  };
+  
+
   const handleShow = () => setShow(true);
   const getRemainingDays = (insuranceDate) => {
     const dateParts = insuranceDate.split("-");
@@ -61,27 +96,30 @@ export default function HomePage() {
     vehicleImg: null,
   });
   const handleSubmit = async (e) => {
+    setSubmitCount(c => c + 1); // This will trigger re-rendering which might be useful for showing updated error messages
     e.preventDefault();
-
-    try {
-      const formData = new FormData();
-      formData.append('vehicleName', formValues.vehicleName);
-      formData.append('vehicleBrand', formValues.vehicleBrand);
-      formData.append('vehicleModel', formValues.vehicleModel);
-      formData.append('vehicleNo', formValues.vehicleNo);
-      formData.append('insuranceDate', formValues.insuranceDate);
-      formData.append('PCCDate', formValues.PCCDate);
+  
+    const formData = new FormData();
+    formData.append('vehicleName', formValues.vehicleName);
+    formData.append('vehicleBrand', formValues.vehicleBrand);
+    formData.append('vehicleModel', formValues.vehicleModel);
+    formData.append('vehicleNo', formValues.vehicleNo);
+    formData.append('insuranceDate', formValues.insuranceDate);
+    formData.append('PCCDate', formValues.PCCDate);
+    if (formValues.vehicleImg) {
       formData.append('vehicleImg', formValues.vehicleImg);
-
-      const response = await axios.post('https://vehiclerc.prosevo.com/api/document', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data.success) {
-        // Show the success message in a Toast notification
-        toast.success('Vehicle Is added', {
+    }
+  
+    try {
+      let response;
+      if (editingVehicle) {
+        // Editing an existing vehicle
+        response = await axios.put(`https://vehiclerc.prosevo.com/api/document/${editingVehicle._id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        toast.success('Vehicle has been updated successfully', {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: true,
@@ -91,17 +129,14 @@ export default function HomePage() {
           progress: undefined,
           theme: "dark",
         });
-
-        // Fetch the updated list of vehicles after adding
-        const updatedResponse = await axios.get('https://vehiclerc.prosevo.com/api/documents');
-        if (updatedResponse.data && updatedResponse.data.success) {
-          setVehicles(updatedResponse.data.data); // Update the state with the updated data
-        }
-
-        handleClose();
       } else {
-        // Show the error message from the response in a Toast notification
-        toast.error(response.data.message, { // Pass the response message here
+        // Adding a new vehicle
+        response = await axios.post('https://vehiclerc.prosevo.com/api/document', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        toast.success('Vehicle is added', {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: true,
@@ -112,20 +147,49 @@ export default function HomePage() {
           theme: "dark",
         });
       }
+  
+      if (response.data && response.data.success) {
+        const updatedResponse = await axios.get('https://vehiclerc.prosevo.com/api/documents');
+        if (updatedResponse.data && updatedResponse.data.success) {
+          setVehicles(updatedResponse.data.data);
+        }
+        handleClose(); // Reset form and close modal
+      }
     } catch (error) {
-      // console.error('There was an error!', error.response.data.message);
-      toast.error(error.response.data.message, { // Pass the response message here
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+      if (error.response && error.response.data && error.response.data.message && typeof error.response.data.message === 'object') {
+        const errors = error.response.data.message;
+        setFormErrors(errors); // Set the error messages state
+      } else {
+        setFormErrors({}); // Clear errors if none are returned
+      }
+  
+      let errorMessage = 'There was an error processing your request.';
+      if (error.response && error.response.data && error.response.data.message && typeof error.response.data.message === 'object') {
+        const errors = error.response.data.message;
+        const errorMessages = Object.keys(errors).map(key => errors[key]).join(', ');
+        errorMessage = errorMessages;
+      } else if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+  
+      // toast.error(errorMessage, {
+      //   position: "top-right",
+      //   autoClose: 2000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "dark",
+      // });
     }
   };
+  
+
+
+
 
 
   const handleChange = (e) => {
@@ -139,7 +203,7 @@ export default function HomePage() {
       try {
         const response = await axios.get('https://vehiclerc.prosevo.com/api/documents');
         if (response.data && response.data.success) {
-          setVehicles(response.data.data); // Update the state with the fetched data
+          setVehicles(response.data.data);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -149,16 +213,43 @@ export default function HomePage() {
   }, []);
 
   const deleteVehicle = async (vehicleId) => {
+    let vehicleName = 'Unknown Vehicle';
     try {
+      const vehicleToDelete = vehicles.find(vehicle => vehicle._id === vehicleId);
+      if (vehicleToDelete) {
+        vehicleName = vehicleToDelete.vehicleName;
+      }
+
       const response = await axios.delete(`https://vehiclerc.prosevo.com/api/document/${vehicleId}`);
       if (response.data && response.data.success) {
-        // Remove the deleted vehicle from the state
         setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
+        toast.success(`${vehicleName} Deleted`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (error) {
       console.error('Error deleting the vehicle:', error);
+      toast.error(`Failed to delete ${vehicleName}`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
+
+
 
   const yearOptions = Array.from({ length: (2030 - 1800) + 1 }, (_, i) => {
     const year = 1800 + i;
@@ -232,7 +323,7 @@ export default function HomePage() {
             const pollutionStyle = remainingPccDays < 1 ? { color: 'red' } :
               remainingPccDays < 15 ? { color: '#bd7a00' } : {};
             return (
-              <div className="card col-3" style={{ width: "304px", minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10 }}>
+              <div className="card col-3 vehicleCard" style={{ minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10 }}>
                 {/* <div className="card-body p-4">
                   <div className='cardContent'>
                     <h5 className="card-title fw-bold ">{vehicle.vehicleName}</h5>
@@ -260,7 +351,8 @@ export default function HomePage() {
                     <span className="Vname">{vehicle.vehicleName}</span>
                     <div>
                       <i class="bi bi-trash-fill delete" onClick={() => deleteVehicle(vehicle._id)}></i>
-                      <i class="bi bi-pen-fill edit"></i>
+                      <i className="bi bi-pen-fill edit" onClick={() => handleEditClick(vehicle)}></i>
+
                     </div>
                   </div>
                   <p className="Vbrand">{vehicle.vehicleBrand}</p>
@@ -293,63 +385,10 @@ export default function HomePage() {
               </div>
             );
           })}
-          <div className="card col-3" style={{ width: "20rem", minHeight: '256px', margin: '30px', backgroundImage: `url(https://t4.ftcdn.net/jpg/05/53/55/21/360_F_553552160_9HxeyvvbSrOtEqpaiWsCD2TEnwQxvrwB.jpg)` }}>
-            <div className="card-body d-flex  align-items-center justify-content-center " id='cardDesignAdd'>
-              <div className='cardContent' id='addCardcontent' onClick={handleShow}>
-                <h5 className="card-title fw-bold m-0 ">
-                  <i class="bi bi-plus-circle-dotted"></i>
-                  Add More
-                </h5>
-              </div>
 
-              {/* <div className='actions'>
-                    <a href="#" className="btn btn-secondary">
-                      Update
-                    </a>
-                    <a href="#" className="btn btn-danger">
-                      Delete
-                    </a>
-                  </div> */}
-            </div>
-          </div>
-
-
-          <div className="card col-3" style={{ width: "304px", minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10, height: 388 }}>
-            <div className="card-body p-4">
-              <div className='nameDiv'>
-                <span className="Vname">Shine 125</span>
-                <div>
-                  <i class="bi bi-trash-fill delete"></i>
-                  <i class="bi bi-pen-fill edit"></i>
-                </div>
-              </div>
-              <p className="Vbrand">Honda</p>
-              <div className='imageDiv'>
-                <img src={imageCar} alt="" width={"100%"} />
-                <div className="shadowDiv">
-                </div>
-              </div>
-              <table class="Pcc">
-                <tr>
-                  <th><i class="bi bi-aspect-ratio"></i><span>Vehicle No:</span> </th>
-                  <td>KL71B7909</td>
-                </tr>
-                <tr>
-                  <th><i class="bi bi-calendar2-fill"></i> <span>Vehicle Model:</span></th>
-                  <td>2016(8 Year )</td>
-                </tr>
-                <tr>
-                  <th><i class="bi bi-calendar2-check"></i> <span>Insurance:</span></th>
-                  <td>12/12/2024(607 days)</td>
-                </tr>
-                <tr>
-                  <th><i class="bi bi-clouds"></i> <span>Polution:</span> </th>
-                  <td>12/12/2024
-                    (607 days)
-                  </td>
-                </tr>
-              </table>
-
+          <div className="card col-3 vehicleCard" style={{ minHeight: '256px', margin: '30px', background: 'var(--card-color)', border: 0, borderRadius: 10, height: 388, backgroundImage: `url(https://t4.ftcdn.net/jpg/05/53/55/21/360_F_553552160_9HxeyvvbSrOtEqpaiWsCD2TEnwQxvrwB.jpg)`,backgroundRepeat:'no-repeat',backgroundPosition:'center',backgroundSize:'cover' }}>
+            <div className="card-body p-4 d-flex justify-content-center align-items-center " id='cardDesignAdd'>
+              <Button style={{ backgroundColor: '#90A3BF', border: 'none' }} onClick={handleShow}> <i class="bi bi-car-front-fill"></i> Add More</Button>
             </div>
 
           </div>
@@ -373,9 +412,10 @@ export default function HomePage() {
                     autoFocus
                     value={formValues.vehicleName}
                     onChange={handleChange}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
                   />
                 </Form.Group>
+                {formErrors.vehicleName && <div className="text-danger  shake-animation" id='errorMsg'>{formErrors.vehicleName}</div>}
                 <Form.Group className="mb-3 " controlId="vehicleBrand">
                   <Form.Label>Vehicle Brand</Form.Label>
                   <Form.Control
@@ -383,9 +423,13 @@ export default function HomePage() {
                     placeholder="Vehicle Brand"
                     value={formValues.vehicleBrand}
                     onChange={handleChange}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
+                {formErrors.vehicleBrand && <div className="text-danger  shake-animation" id='errorMsg'>{formErrors.vehicleBrand}</div>}
+
                 <Form.Group className="mb-3" controlId="vehicleModel">
                   <Form.Label>Vehicle Model</Form.Label>
                   {/* <Form.Control
@@ -402,9 +446,13 @@ export default function HomePage() {
                     placeholder="Select a model year..."
                     isSearchable={true}
                     styles={customStyles}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
+                {formErrors.vehicleModel && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.vehicleModel}</div>}
+
 
                 <Form.Group className="mb-3 " controlId="vehicleNo">
                   <Form.Label>Vehicle Number</Form.Label>
@@ -413,10 +461,14 @@ export default function HomePage() {
                     placeholder="Vehicle Number"
                     value={formValues.vehicleNo}
                     onChange={handleChange}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
 
                   />
                 </Form.Group>
+                {formErrors.vehicleNo && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.vehicleNo}</div>}
+
                 <Form.Group className="mb-3" controlId="insuranceDate">
                   <Form.Label>Vehicle Insurance</Form.Label>
                   <Form.Control
@@ -424,9 +476,13 @@ export default function HomePage() {
                     placeholder="Vehicle Insurance"
                     value={formatDateToInput(formValues.insuranceDate)}
                     onChange={(e) => handleDateChange(e.target.value, 'insuranceDate')}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
+                {formErrors.insuranceDate && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.insuranceDate}</div>}
+
                 <Form.Group className="mb-3 " controlId="PCCDate">
                   <Form.Label>Vehicle Pcc</Form.Label>
                   <Form.Control
@@ -434,21 +490,23 @@ export default function HomePage() {
                     placeholder="Vehicle PCC"
                     value={formatDateToInput(formValues.PCCDate)}
                     onChange={(e) => handleDateChange(e.target.value, 'PCCDate')}
-                    required
+                    className={formErrors.vehicleName ? 'input-error' : ''}
+
+
                   />
                 </Form.Group>
-
+                {formErrors.PCCDate && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.PCCDate}</div>}
                 <Form.Group className="mb-3" controlId="vehicleImg">
                   <Form.Label>Vehicle Image</Form.Label>
                   <Form.Control
                     type="file"
                     placeholder="Vehicle Image"
-                    required
+
+                    className={formErrors.vehicleName ? 'input-error' : ''}
                     onChange={(e) => handleFileChange(e)} // Add this line
                   />
                 </Form.Group>
-
-
+                {formErrors.vehicleImg && <div className="text-danger shake-animation" id='errorMsg'>{formErrors.vehicleImg}</div>}
                 <Modal.Footer>
                   <Button variant="secondary" type='submit'>Add</Button>
                   <Button variant="outline-secondary" onClick={handleClose}>
@@ -457,9 +515,7 @@ export default function HomePage() {
                 </Modal.Footer>
               </Form>
             </Modal.Body>
-
           </Modal>
-
         </div>
       </div>
     </>
