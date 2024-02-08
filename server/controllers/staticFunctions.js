@@ -1,12 +1,22 @@
 function getValuesFromJson(target = {}, resource = {}) {
 
-    let data={}
+    let data = {}
+    let errData={}
+    let error = false
     // console.log(target)
     for (let key in resource) {
-        if (target[resource[key]] !==undefined) { // optional check to only iterate through own properties
+        if (target[resource[key]] !== undefined && !/^\s*$/.test(target[resource[key]])) { // optional check to only iterate through own properties
             data[key] = target[key]
-        }else{
-            return false;
+        } else {
+            error = true;
+            errData[key] = `${resource[key]} is missing `
+        }
+    }
+
+    if (error) {
+        return {
+            error: true,
+            data: errData
         }
     }
 
@@ -15,4 +25,4 @@ function getValuesFromJson(target = {}, resource = {}) {
 
 }
 
-module.exports = {getValuesFromJson}
+module.exports = { getValuesFromJson }

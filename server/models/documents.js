@@ -9,6 +9,7 @@ const M01_documentsFields = {
   PCCDate: 'PCCDate',
   vehicleImgName: 'vehicleImgName',
   vehicleImgPath:'vehicleImgPath',
+  vehicleImg:'vehicleImg'
 }
 
 // Define the user schema

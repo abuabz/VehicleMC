@@ -31,22 +31,35 @@ app.post('/api/document',
   async (req, res) => {
     try {
 
-      if (!req.file) {
-        return res.status(400).json({ success: false, message: 'image not uploaded' });
-      }
       const vehicleImglocation = `/uploads/`;
-      const vehicleImgname = req.file.filename
-      console.log(`${process.env.IMGAGE_STR}/${vehicleImgname}`)
+      
 
       const fields = {...M01_documentsFields};
       delete fields.vehicleImgName;
       delete fields.vehicleImgPath;
+      delete fields.vehicleImg;
       let data =  getValuesFromJson(req.body,fields)
-      if(data === false){
+      console.log(req.file)
+      if (!req.file) {
+        if(data.data){
+          data.data[M01_documentsFields.vehicleImg] = `${M01_documentsFields.vehicleImg} is missing`
+        }else{
+          data['data']={}
+          data.data[M01_documentsFields.vehicleImg] = `${M01_documentsFields.vehicleImg} is missing`
+        }
+        data.error = true
+        // return res.status(400).json({ success: false, message: 'image not uploaded' });
+      }
+
+      if(data.error === true){
         const err = new Error('Some data is missing')
-        err.msg = 'Some data is missing'
+        err.msg = data.data
         throw err
       }
+
+      const vehicleImgname = req.file.filename
+      console.log(`${process.env.IMGAGE_STR}/${vehicleImgname}`)
+      
       data[M01_documentsFields.vehicleImgName] = vehicleImgname;
       data[M01_documentsFields.vehicleImgPath] = vehicleImglocation;
 
