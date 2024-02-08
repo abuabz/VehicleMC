@@ -1,15 +1,17 @@
-function getValuesFromJson(target = {}, resource = {}) {
+function getValuesFromJson(target = {}, resource = {}, returnError = true) {
 
     let data = {}
-    let errData={}
+    let errData = {}
     let error = false
     // console.log(target)
     for (let key in resource) {
         if (target[resource[key]] !== undefined && !/^\s*$/.test(target[resource[key]])) { // optional check to only iterate through own properties
             data[key] = target[key]
         } else {
-            error = true;
-            errData[key] = `${resource[key]} is missing `
+            if (returnError===true) {
+                error = true;
+                errData[key] = `${resource[key]} is missing `
+            }
         }
     }
 

@@ -9,6 +9,8 @@ const app = express();
 require('dotenv').config();
 app.use(cors());
 
+const vehicleImglocation = `/uploads/`;
+
 const port = process.env.PORT || 3003; // You can choose any available port
 
 const storage = multer.diskStorage({
@@ -31,7 +33,6 @@ app.post('/api/document',
   async (req, res) => {
     try {
 
-      const vehicleImglocation = `/uploads/`;
       
 
       const fields = {...M01_documentsFields};
@@ -39,7 +40,6 @@ app.post('/api/document',
       delete fields.vehicleImgPath;
       delete fields.vehicleImg;
       let data =  getValuesFromJson(req.body,fields)
-      console.log(req.file)
       if (!req.file) {
         if(data.data){
           data.data[M01_documentsFields.vehicleImg] = `${M01_documentsFields.vehicleImg} is missing`
@@ -131,14 +131,23 @@ app.delete('/api/document/:id',async (req,res)=>{
 app.put('/api/document/:id',upload.single('vehicleImg'),async (req,res)=>{
   try {
     // Use await with the .find() method to retrieve all documents
+    const fields = {...M01_documentsFields};
     const resourceId = req.params.id;
-    const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
-
-    const updateData = {
-      vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate
+    // const { vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate } = req.body
+    let data =  getValuesFromJson(req.body,fields,false)
+    
+    if(req.file){
+      const vehicleImgname = req.file.filename
+      console.log(`${process.env.IMGAGE_STR}/${vehicleImgname}`)
+      
+      data[M01_documentsFields.vehicleImgName] = vehicleImgname;
+      data[M01_documentsFields.vehicleImgPath] = vehicleImglocation;
     }
+    // const updateData = {
+    //   vehicleName, vehicleBrand, vehicleModel, vehicleNo, insuranceDate, PCCDate
+    // }
 
-    const data = await Documents.findByIdAndUpdate(resourceId, updateData, {
+    const data1 = await Documents.findByIdAndUpdate(resourceId, data, {
       new: true, // Return the updated document
       runValidators: true, // Run model validators on update
     });
@@ -146,7 +155,7 @@ app.put('/api/document/:id',upload.single('vehicleImg'),async (req,res)=>{
     // console.log(data)
     res.status(200).json({
       success:true,
-      data,
+      data1,
       message:'success'
     })
     
