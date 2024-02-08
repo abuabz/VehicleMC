@@ -32,6 +32,7 @@ body::-webkit-scrollbar {
     --sub-color:#46556e;
     --shadow-vehicle:#ffffff96;
     --btn-color:#3563E9;
+    transition: 2S;
 
     
     

@@ -41,11 +41,26 @@ export default function HomePage() {
   const [selectedModel, setSelectedModel] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [submitCount, setSubmitCount] = useState(0);
+  const [editingVehicle, setEditingVehicle] = useState(null);
 
+  const handleEditClick = (vehicle) => {
+    setFormValues({
+      vehicleName: vehicle.vehicleName,
+      vehicleBrand: vehicle.vehicleBrand,
+      vehicleModel: vehicle.vehicleModel,
+      vehicleNo: vehicle.vehicleNo,
+      insuranceDate: vehicle.insuranceDate,
+      PCCDate: vehicle.PCCDate,
+      vehicleImg: null, // You might need a different approach for files
+    });
+    setSelectedModel({ value: vehicle.vehicleModel, label: vehicle.vehicleModel.toString() }); // If using react-select
+    setEditingVehicle(vehicle); // Keep track of the vehicle being edited
+    handleShow(); // Show the form modal
+  };
+  
   const handleClose = () => {
     setShow(false);
-    setFormErrors({}); // Clear form errors if any
-    // Reset form values to initial state
+    setFormErrors({});
     setFormValues({
       vehicleName: '',
       vehicleBrand: '',
@@ -55,8 +70,10 @@ export default function HomePage() {
       PCCDate: '',
       vehicleImg: null,
     });
-    setSelectedModel(null); // If you're using react-select and want to reset the selected option
+    setSelectedModel(null);
+    setEditingVehicle(null); // Reset editing vehicle
   };
+  
 
   const handleShow = () => setShow(true);
   const getRemainingDays = (insuranceDate) => {
@@ -79,26 +96,46 @@ export default function HomePage() {
     vehicleImg: null,
   });
   const handleSubmit = async (e) => {
-    setSubmitCount(c => c + 1);
+    setSubmitCount(c => c + 1); // This will trigger re-rendering which might be useful for showing updated error messages
     e.preventDefault();
-
-    try {
-      const formData = new FormData();
-      formData.append('vehicleName', formValues.vehicleName);
-      formData.append('vehicleBrand', formValues.vehicleBrand);
-      formData.append('vehicleModel', formValues.vehicleModel);
-      formData.append('vehicleNo', formValues.vehicleNo);
-      formData.append('insuranceDate', formValues.insuranceDate);
-      formData.append('PCCDate', formValues.PCCDate);
+  
+    const formData = new FormData();
+    formData.append('vehicleName', formValues.vehicleName);
+    formData.append('vehicleBrand', formValues.vehicleBrand);
+    formData.append('vehicleModel', formValues.vehicleModel);
+    formData.append('vehicleNo', formValues.vehicleNo);
+    formData.append('insuranceDate', formValues.insuranceDate);
+    formData.append('PCCDate', formValues.PCCDate);
+    if (formValues.vehicleImg) {
       formData.append('vehicleImg', formValues.vehicleImg);
-
-      const response = await axios.post('https://vehiclerc.prosevo.com/api/document', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data && response.data.success) {
+    }
+  
+    try {
+      let response;
+      if (editingVehicle) {
+        // Editing an existing vehicle
+        response = await axios.put(`https://vehiclerc.prosevo.com/api/document/${editingVehicle._id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        toast.success('Vehicle has been updated successfully', {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      } else {
+        // Adding a new vehicle
+        response = await axios.post('https://vehiclerc.prosevo.com/api/document', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
         toast.success('Vehicle is added', {
           position: "top-right",
           autoClose: 2000,
@@ -109,49 +146,47 @@ export default function HomePage() {
           progress: undefined,
           theme: "dark",
         });
-
+      }
+  
+      if (response.data && response.data.success) {
         const updatedResponse = await axios.get('https://vehiclerc.prosevo.com/api/documents');
         if (updatedResponse.data && updatedResponse.data.success) {
           setVehicles(updatedResponse.data.data);
         }
-
-        handleClose();
-      } else {
-        toast.error(response.data.message || 'An error occurred while adding the vehicle', {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
+        handleClose(); // Reset form and close modal
       }
     } catch (error) {
-      // Updated error handling for detailed error messages
-
-
-      // Inside your catch block in handleSubmit
       if (error.response && error.response.data && error.response.data.message && typeof error.response.data.message === 'object') {
         const errors = error.response.data.message;
         setFormErrors(errors); // Set the error messages state
       } else {
         setFormErrors({}); // Clear errors if none are returned
       }
-
+  
       let errorMessage = 'There was an error processing your request.';
       if (error.response && error.response.data && error.response.data.message && typeof error.response.data.message === 'object') {
         const errors = error.response.data.message;
-        const errorMessages = Object.keys(errors).map(key => `${errors[key]}`).join(', ');
+        const errorMessages = Object.keys(errors).map(key => errors[key]).join(', ');
         errorMessage = errorMessages;
       } else if (error.response && error.response.data && error.response.data.message) {
         errorMessage = error.response.data.message;
       } else if (error.message) {
         errorMessage = error.message;
       }
+  
+      // toast.error(errorMessage, {
+      //   position: "top-right",
+      //   autoClose: 2000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "dark",
+      // });
     }
   };
+  
 
 
 
@@ -316,7 +351,8 @@ export default function HomePage() {
                     <span className="Vname">{vehicle.vehicleName}</span>
                     <div>
                       <i class="bi bi-trash-fill delete" onClick={() => deleteVehicle(vehicle._id)}></i>
-                      <i class="bi bi-pen-fill edit"></i>
+                      <i className="bi bi-pen-fill edit" onClick={() => handleEditClick(vehicle)}></i>
+
                     </div>
                   </div>
                   <p className="Vbrand">{vehicle.vehicleBrand}</p>
