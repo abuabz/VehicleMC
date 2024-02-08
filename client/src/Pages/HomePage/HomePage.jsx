@@ -139,17 +139,6 @@ setFormErrors(false);
       } else if (error.message) {
         errorMessage = error.message;
       }
-
-      // toast.error(errorMessage, {
-      //   position: "top-right",
-      //   autoClose: 2000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "dark",
-      // });
     }
   };
 
@@ -168,7 +157,7 @@ setFormErrors(false);
       try {
         const response = await axios.get('https://vehiclerc.prosevo.com/api/documents');
         if (response.data && response.data.success) {
-          setVehicles(response.data.data); // Update the state with the fetched data
+          setVehicles(response.data.data); 
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -178,20 +167,16 @@ setFormErrors(false);
   }, []);
 
   const deleteVehicle = async (vehicleId) => {
-    let vehicleName = 'Unknown Vehicle'; // Default value in case vehicle is not found
+    let vehicleName = 'Unknown Vehicle'; 
     try {
-      // Attempt to find the vehicle by ID to get its name before deletion
       const vehicleToDelete = vehicles.find(vehicle => vehicle._id === vehicleId);
       if (vehicleToDelete) {
-        vehicleName = vehicleToDelete.vehicleName; // Update vehicleName with the actual name
+        vehicleName = vehicleToDelete.vehicleName; 
       }
   
       const response = await axios.delete(`https://vehiclerc.prosevo.com/api/document/${vehicleId}`);
       if (response.data && response.data.success) {
-        // Remove the deleted vehicle from the state
         setVehicles(vehicles.filter(vehicle => vehicle._id !== vehicleId));
-  
-        // Show a success toast with the vehicle's name
         toast.success(`${vehicleName} Deleted`, {
           position: "top-right",
           autoClose: 1000,
@@ -205,7 +190,6 @@ setFormErrors(false);
       }
     } catch (error) {
       console.error('Error deleting the vehicle:', error);
-      // Show an error toast. Here, vehicleName is already defined
       toast.error(`Failed to delete ${vehicleName}`, {
         position: "top-right",
         autoClose: 2000,
